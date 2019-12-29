@@ -1,0 +1,12 @@
+messages = {
+  welcome:	'Welcome to the calculator',
+  separator:	'-------------------------',
+  number1:	'Enter the first number',
+  number2:	'Enter the second number',
+  operation:	'What operation do you want to perform\n\t1)Add 2)Subtract 3)Multiply 4) Divide',
+  result:	'The result is ',
+  continue:	'Do you want to continue? Press y to continue, any other key to exit',
+  invalidNum:	'Invalid number, Enter a valid number',
+  invalidOp:	'Invalid operation, Enter a valid number from 1 to 4.'
+};
+
