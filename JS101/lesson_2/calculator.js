@@ -1,8 +1,19 @@
 const readline = require("readline-sync");
 const config = require("./messages.json");
+let tryAgain = true;
+let language = "English";
 
 function prompt(message) {
   console.log(`=> ${message}`);
+}
+
+function setLanguage(languageChoice) {
+  if (["1", "2", "3"].includes(languageChoice)) {
+    language = config.language.choices[Number(languageChoice) - 1];
+  } else {
+    prompt(config.language.invalidLanguage);
+  }
+  return language;
 }
 
 function invalidNumber(num) {
@@ -51,20 +62,9 @@ function calculate(num1, num2, operation) {
   }
 }
 
-function setLanguage(languageChoice) {
-  let language = "English";
-  if (["1", "2", "3"].includes(languageChoice)) {
-    language = config.language.choices[Number(languageChoice) - 1];
-  } else {
-    prompt(config.language.invalidLanguage);
-  }
-  return language;
-}
 
-
-let tryAgain = true;
 prompt(config.language.chooseLanguage);
-let language = setLanguage(readline.question());
+language = setLanguage(readline.question());
 
 while (tryAgain) {
 
