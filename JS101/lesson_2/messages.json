@@ -1,12 +1,44 @@
-messages = {
-  welcome:	'Welcome to the calculator',
-  separator:	'-------------------------',
-  number1:	'Enter the first number',
-  number2:	'Enter the second number',
-  operation:	'What operation do you want to perform\n\t1)Add 2)Subtract 3)Multiply 4) Divide',
-  result:	'The result is ',
-  continue:	'Do you want to continue? Press y to continue, any other key to exit',
-  invalidNum:	'Invalid number, Enter a valid number',
-  invalidOp:	'Invalid operation, Enter a valid number from 1 to 4.'
-};
+{
+  "language": {
+    "choices":	["English", "Chinese", "French"],
+    "chooseLanguage":	"Select Language - 1 for English 2 for Chinese 3 for French",
+    "invalidLanguage":	"Invalid Language selcted. Language set to English."
+  },
+  "displayText": {
+    "English": {
+      "welcome":	"Welcome to the calculator",
+      "separator":	"-------------------------",
+      "number1":	"Enter the first number",
+      "number2":	"Enter the second number",
+      "operation":	"What operation do you want to perform?\n\t1)Add 2)Subtract 3)Multiply 4) Divide",
+      "result":		"The result is ",
+      "tryAgain":	"Do you want to continue? Press y to continue, any other key to exit",
+      "invalidNum":	"Invalid number, Enter a valid number",
+      "invalidOp":	"Invalid operation, Enter a valid number from 1 to 4."
+    },
+    "Chinese": {
+      "welcome":	"欢迎使用计算器",
+      "separator":	"--------------",
+      "number1":	"输入第一个数字",
+      "number2":	"输入第二个数字",
+      "operation":	"你想做什么计算?\n\t1)加 2)减 3)乘 4)除",
+      "result":		"结果是 ",
+      "tryAgain":	"你想继续吗? 按y继续, 退出按任何其他键",
+      "invalidNum":	"无效号码, 输入有效号码",
+      "invalidOp":	"无效的操作, 输入1到4之间的数字"
+    },
+    "French": {
+      "welcome":	"Bienvenue dans la calculatrice",
+      "separator":      "------------------------------",
+      "number1":	"Entrez le premier numéro",
+      "number2":	"Entrez le deuxième numéro",
+      "operation":	"Quelle opération souhaitez-vous effectuer?\n\t1) Ajouter, 2) Soustraire, 3) Multiplier, 4) Diviser",
+      "result":		"Le résultat est ",
+      "tryAgain":	"Voulez-vous essayer à nouveau? Appuyez sur y pour continuer, toute autre clé pour quitter",
+      "invalidNum":	"Numéro invalide, Entrez un numéro valide",
+      "invalidOp":	"Opération invalide, Entrez un nombre valide de 1 à 4"
+    }
+  }
+}
+
 

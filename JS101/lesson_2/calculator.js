@@ -1,4 +1,5 @@
 const readline = require("readline-sync");
+const config = require("./messages.json");
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -25,7 +26,7 @@ function getUserInput(inputType) {
 function getValidNumber() {
   let number;
   do {
-    prompt("Invalid number. Enter a valid number.");
+    prompt(config.displayText[language].invalidNum);
     number = readline.question();
   } while (invalidNumber(number));
   return Number(number);
@@ -34,7 +35,7 @@ function getValidNumber() {
 function getValidOperation() {
   let operation;
   do {
-    prompt("Invalid operation. Enter a valid number from 1 to 4.");
+    prompt(config.displayText[language].invalidOp);
     operation = readline.question();
   } while (invalidOperation(operation));
   return operation;
@@ -50,24 +51,37 @@ function calculate(num1, num2, operation) {
   }
 }
 
+function setLanguage(languageChoice) {
+  let language = "English";
+  if (["1", "2", "3"].includes(languageChoice)) {
+    language = config.language.choices[Number(languageChoice) - 1];
+  } else {
+    prompt(config.language.invalidLanguage);
+  }
+  return language;
+}
+
+
 let tryAgain = true;
+prompt(config.language.chooseLanguage);
+let language = setLanguage(readline.question());
 
 while (tryAgain) {
 
-  prompt("Welcome to the calculator");
-  prompt("-------------------------`");
-  prompt("Enter the first number");
+  prompt(config.displayText[language].welcome);
+  prompt(config.displayText[language].separator);
+  prompt(config.displayText[language].number1);
   let num1 = getUserInput('number');
-  prompt("Enter the second number");
+  prompt(config.displayText[language].number2);
   let num2 = getUserInput('number');
 
-  prompt("What operation do you want to perform? \n \t1)Add 2)Subract 3)Multiply 4) Divide");
+  prompt(config.displayText[language].operation);
   let operation = getUserInput('operation');
   let output = calculate(num1, num2, operation);
 
-  prompt("The result is " + output);
-  prompt("---------------------------------");
-  prompt("Do you want to try again? Press Y to continue, any other key to exit");
+  prompt(config.displayText[language].result + output);
+  prompt(config.displayText[language].separator);
+  prompt(config.displayText[language].tryAgain);
   let userChoice = readline.question();
   tryAgain = (userChoice.toLowerCase() === 'y');
 }
