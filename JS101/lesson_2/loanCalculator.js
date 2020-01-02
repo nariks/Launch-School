@@ -25,7 +25,7 @@ function isInvalidContinue(input) {
 function getValidAmount() {
   let input;
   do {
-    prompt("Enter a valid load amount. Only numbers greater than 0 are accepted.");
+    prompt("Enter a  number greater than 0.");
     input = readline.question();
   } while (isInvalidAmount(input));
   return +input;
@@ -90,33 +90,32 @@ function calculatePayment(loanAmount, monthlyInterest, loanTermInMonths) {
 let anotherCalc = true;
 
 while (anotherCalc) {
-  
+
   let loanAmount, yearlyInterest, monthlyInterest, loanTermInYears,
-      loanTermInMonths, monthlyPayment, monthlyPaymentRounded,
-      totalInterestPaid;
+      loanTermInMonths, monthlyPayment, totalInterestPaid;
 
   console.clear();
   prompt("Monthly loan payment calculator");
   prompt("*******************************");
-  
+
   prompt("Enter the loan amount");
   loanAmount = getUserInput('amount');
-  
+
   prompt("Enter the interest Annual Percentage Rate (APR) as a %");
   yearlyInterest = getUserInput('interest') / 100;
   monthlyInterest = yearlyInterest / 12;
-  
+
   prompt("Enter the loan duration in years");
   loanTermInYears = getUserInput('term');
   loanTermInMonths = loanTermInYears * 12;
-  
+
   monthlyPayment = calculatePayment(loanAmount, monthlyInterest,
                                     loanTermInMonths);
   totalInterestPaid = (monthlyPayment * loanTermInMonths) - loanAmount;
   prompt(`Monthly payment : $${numberFormat(monthlyPayment)}`);
-  prompt("Total Interest paid at end of loan term :" + 
+  prompt("Total Interest paid at end of loan term :" +
             ` $${numberFormat(totalInterestPaid)}\n`);
-  
+
   prompt("Do you want another calculation? Enter 'y' to continue, 'n' to exit");
   anotherCalc = getUserInput('continue').toLowerCase() === 'y';
 }
