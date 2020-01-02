@@ -25,7 +25,7 @@ function isInvalidContinue(input) {
 function getValidAmount() {
   let input;
   do {
-    prompt("Enter a  number greater than 0.");
+    prompt("Enter a number greater than 0.");
     input = readline.question();
   } while (isInvalidAmount(input));
   return +input;
