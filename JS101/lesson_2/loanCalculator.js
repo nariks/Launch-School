@@ -5,19 +5,21 @@ function prompt(message) {
 }
 
 function isInvalidAmount(input) {
-  return (input === '' || Number.isNaN(+input) || +input <= 0) ? true : false;
+  return !!((input === '' || Number.isNaN(+input) || +input <= 0));
 }
 
 function isInvalidInterest(input) {
-  return (input === '' || Number.isNaN(+input) || +input <=0 || +input >= 100);
+  return (input === '' || Number.isNaN(+input) || +input <= 0 || +input > 100);
 }
 
 function isInvalidTerm(input) {
-  return (input === '' || Number.isNaN(+input) || +input <=0 || +input >= 100);
+  return (input === '' || Number.isNaN(+input) || +input <= 0 || +input > 100);
 }
 
 function isInvalidContinue(input) {
-  return !(input[0] === 'y' || input[0] === 'n');
+  if (input === '') return true;
+  let inputFirstChar = input[0].toLowerCase();
+  return !(inputFirstChar === 'y' || inputFirstChar === 'n');
 }
 
 function getValidAmount() {
@@ -32,7 +34,7 @@ function getValidAmount() {
 function getValidInterest() {
   let input;
   do {
-    prompt("Enter a valid interest rate. Only rates from 0% to 100% are accepted.");
+    prompt("Enter a number greater than 0 and less than or equal to 100.");
     input = readline.question();
   } while (isInvalidInterest(input));
   return +input;
@@ -41,39 +43,44 @@ function getValidInterest() {
 function getValidTerm() {
   let input;
   do {
-    prompt("Enter a valid duration between 0 to 50 years");
+    prompt("Enter a number greater than 0 and less than or equal to 100");
     input = readline.question();
-  } while(isInvalidTerm(input));
+  } while (isInvalidTerm(input));
   return +input;
 }
 
 function getValidContinue() {
   let input;
   do {
-    prompt("Enter 'y' or 'n' only.")
+    prompt("Enter 'y' or 'n' only.");
     input = readline.question();
   } while (isInvalidContinue(input));
-  return input;
+  return input[0];
 }
 
 function getUserInput(inputType) {
   let input = readline.question();
   switch (inputType) {
-    case 'amount':   return (isInvalidAmount(input) ? getValidAmount() : input);
-    case 'interest': return (isInvalidInterest(input) ? getValidInterest() : input);
-    case 'term':     return (isInvalidTerm(input) ? getValidTerm() : input);
-    case 'continue': return (isInvalidContinue(input) ? getValidContinue() : input);
-    default:    
-                prompt("Program error - getUserInput()");
-                return undefined;
+    case 'amount':
+      return (isInvalidAmount(input) ? getValidAmount() : input);
+    case 'interest':
+      return (isInvalidInterest(input) ? getValidInterest() : input);
+    case 'term':
+      return (isInvalidTerm(input) ? getValidTerm() : input);
+    case 'continue':
+      return (isInvalidContinue(input) ? getValidContinue() : input[0]);
+    default:
+      prompt("Program error - getUserInput()");
+      return undefined;
   }
 }
 
 let anotherCalc = true;
 while (anotherCalc) {
 
+  console.clear();
   prompt("Monthly loan payment calculator");
-  prompt("*******************************");  
+  prompt("*******************************");
   prompt("Enter the loan amount");
   let loanAmount = getUserInput('amount');
   prompt("Enter the interest Annual Percentage Rate (APR) as a %");
@@ -83,12 +90,12 @@ while (anotherCalc) {
   let loanTermInYears = getUserInput('term');
   let loanTermInMonths = loanTermInYears * 12;
 
-  let monthlyPayment = loanAmount * 
+  let monthlyPayment = loanAmount *
                      (monthlyInterest /
                      (1 - Math.pow((1 + monthlyInterest),(-loanTermInMonths))));
-  console.log(`Monthly payment : $${monthlyPayment.toLocaleString(undefined, 
+  console.log(`Monthly payment : $${monthlyPayment.toLocaleString(undefined,
                                     {maximumFractionDigits: 2})}`);
-  
+
   prompt("Do you want another calculation? Enter 'y' to continue, 'n' to exit");
-  anotherCalc = getUserInput('continue') === 'y' ? true : false;
+  anotherCalc = getUserInput('continue').toLowerCase() === 'y';
 }
