@@ -9,7 +9,7 @@ function isInvalidAmount(input) {
 }
 
 function isInvalidInterest(input) {
-  return (input === '' || Number.isNaN(+input) || +input <= 0 || +input > 100);
+  return (input === '' || Number.isNaN(+input) || +input < 0 || +input > 100);
 }
 
 function isInvalidTerm(input) {
@@ -34,7 +34,7 @@ function getValidAmount() {
 function getValidInterest() {
   let input;
   do {
-    prompt("Enter a number greater than 0 and less than or equal to 100.");
+    prompt("Enter a number from 0 upto 100.");
     input = readline.question();
   } while (isInvalidInterest(input));
   return +input;
@@ -43,7 +43,7 @@ function getValidInterest() {
 function getValidTerm() {
   let input;
   do {
-    prompt("Enter a number greater than 0 and less than or equal to 100");
+    prompt("Enter a number greater than 0 and upto 100");
     input = readline.question();
   } while (isInvalidTerm(input));
   return +input;
@@ -75,27 +75,34 @@ function getUserInput(inputType) {
   }
 }
 
-let anotherCalc = true;
-while (anotherCalc) {
+function calculatePayment(loanAmount, monthlyInterest, loanTermInMonths) {
+  //formula adjusted to account for 0% interest rate
+  if (monthlyInterest === 0) return (loanAmount / loanTermInMonths);
+  return loanAmount * (monthlyInterest /
+         (1 - Math.pow((1 + monthlyInterest),(-loanTermInMonths))));
+}
 
+let anotherCalc = true;
+
+while (anotherCalc) {
+  let loanAmount, yearlyInterest, monthlyInterest, loanTermInYears,
+      loanTermInMonths, monthlyPayment, monthlyPaymentRounded;
   console.clear();
   prompt("Monthly loan payment calculator");
   prompt("*******************************");
   prompt("Enter the loan amount");
-  let loanAmount = getUserInput('amount');
+  loanAmount = getUserInput('amount');
   prompt("Enter the interest Annual Percentage Rate (APR) as a %");
-  let yearlyInterest = getUserInput('interest') / 100;
-  let monthlyInterest = yearlyInterest / 12;
+  yearlyInterest = getUserInput('interest') / 100;
+  monthlyInterest = yearlyInterest / 12;
   prompt("Enter the loan duration in years");
-  let loanTermInYears = getUserInput('term');
-  let loanTermInMonths = loanTermInYears * 12;
-
-  let monthlyPayment = loanAmount *
-                     (monthlyInterest /
-                     (1 - Math.pow((1 + monthlyInterest),(-loanTermInMonths))));
-  console.log(`Monthly payment : $${monthlyPayment.toLocaleString(undefined,
-                                    {maximumFractionDigits: 2})}`);
-
+  loanTermInYears = getUserInput('term');
+  loanTermInMonths = loanTermInYears * 12;
+  monthlyPayment = calculatePayment(loanAmount, monthlyInterest,
+                                    loanTermInMonths);
+  monthlyPaymentRounded = monthlyPayment.toLocaleString(undefined,
+                          {maximumFractionDigits: 2});
+  console.log(`Monthly payment : $${monthlyPaymentRounded}\n`);
   prompt("Do you want another calculation? Enter 'y' to continue, 'n' to exit");
   anotherCalc = getUserInput('continue').toLowerCase() === 'y';
 }
