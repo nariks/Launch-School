@@ -12,67 +12,70 @@ function isInvalidInterest(input) {
   return (input === '' || Number.isNaN(+input) || +input < 0 || +input > 100);
 }
 
-function isInvalidTerm(input) {
-  return (input === '' || Number.isNaN(+input) || +input <= 0 || +input > 100);
+function isInvalidYear(year) {
+  return (year === '' || Number.isNaN(+year) || !Number.isInteger(+year)
+              || +year < 0 || +year > 100);
+}
+
+function isInvalidMonth(month) {
+  return (month === '' || Number.isNaN(+month) || !Number.isInteger(+month) ||
+                +month < 0 || +month > 12);
 }
 
 function isInvalidContinue(input) {
   if (input === '') return true;
-  let inputFirstChar = input[0].toLowerCase();
-  return !(inputFirstChar === 'y' || inputFirstChar === 'n');
+  input = input.toLowerCase();
+  return !(input === 'y' || input === 'yes' || input === 'n' || input === 'no');
 }
 
-function getValidAmount() {
-  let input;
-  do {
+function getAmount() {
+  let input = readline.question();
+  while (isInvalidAmount(input)) {
     prompt("Enter a number greater than 0.");
     input = readline.question();
-  } while (isInvalidAmount(input));
+  }
   return +input;
 }
 
-function getValidInterest() {
-  let input;
-  do {
+function getInterest() {
+  let input = readline.question();
+  while (isInvalidInterest(input)) {
     prompt("Enter a number from 0 upto 100.");
     input = readline.question();
-  } while (isInvalidInterest(input));
-  return +input;
-}
-
-function getValidTerm() {
-  let input;
-  do {
-    prompt("Enter a number greater than 0 and upto 100");
-    input = readline.question();
-  } while (isInvalidTerm(input));
-  return +input;
-}
-
-function getValidContinue() {
-  let input;
-  do {
-    prompt("Enter 'y' or 'n' only.");
-    input = readline.question();
-  } while (isInvalidContinue(input));
-  return input[0];
-}
-
-function getUserInput(inputType) {
-  let input = readline.question();
-  switch (inputType) {
-    case 'amount':
-      return (isInvalidAmount(input) ? getValidAmount() : +input);
-    case 'interest':
-      return (isInvalidInterest(input) ? getValidInterest() : +input);
-    case 'term':
-      return (isInvalidTerm(input) ? getValidTerm() : +input);
-    case 'continue':
-      return (isInvalidContinue(input) ? getValidContinue() : input[0]);
-    default:
-      prompt("Program error - getUserInput()");
-      return undefined;
   }
+  return +input;
+}
+
+function validateYear(year) {
+  while (isInvalidYear(year)) {
+    prompt("Invalid year. Enter a whole number from 0 upto 100");
+    year = readline.question();
+  }
+  return +year;
+}
+
+function validateMonth(month) {
+  while (isInvalidMonth(month)) {
+    prompt("Invalid month. Enter a whole number from 0 upto 12");
+    month = readline.question();
+  }
+  return +month;
+}
+
+function getTermInMonths() {
+  let [year, month] = readline.question().split(',');
+  year = validateYear(year);
+  month = validateMonth(month);
+  return ((year * 12) + month);
+}
+
+function getContinue() {
+  let input = readline.question();
+  while (isInvalidContinue(input)) {
+    prompt("Enter 'y' or 'n' to continue.");
+    input = readline.question();
+  }
+  return input[0];
 }
 
 function numberFormat(number) {
@@ -91,7 +94,7 @@ let anotherCalc = true;
 
 while (anotherCalc) {
 
-  let loanAmount, yearlyInterest, monthlyInterest, loanTermInYears,
+  let loanAmount, yearlyInterest, monthlyInterest,
       loanTermInMonths, monthlyPayment, totalInterestPaid;
 
   console.clear();
@@ -99,15 +102,16 @@ while (anotherCalc) {
   prompt("*******************************");
 
   prompt("Enter the loan amount");
-  loanAmount = getUserInput('amount');
+  loanAmount = getAmount();
 
   prompt("Enter the interest Annual Percentage Rate (APR) as a %");
-  yearlyInterest = getUserInput('interest') / 100;
+  yearlyInterest = getInterest() / 100;
   monthlyInterest = yearlyInterest / 12;
 
-  prompt("Enter the loan duration in years");
-  loanTermInYears = getUserInput('term');
-  loanTermInMonths = loanTermInYears * 12;
+  prompt("Enter the loan duration in years & months");
+  prompt("For example enter 3 year and 5 months as 3,5");
+  loanTermInMonths = getTermInMonths();
+  prompt("Total months in loan period = " + loanTermInMonths);
 
   monthlyPayment = calculatePayment(loanAmount, monthlyInterest,
                                     loanTermInMonths);
@@ -117,5 +121,5 @@ while (anotherCalc) {
             ` $${numberFormat(totalInterestPaid)}\n`);
 
   prompt("Do you want another calculation? Enter 'y' to continue, 'n' to exit");
-  anotherCalc = getUserInput('continue').toLowerCase() === 'y';
+  anotherCalc = getContinue().toLowerCase() === 'y';
 }
