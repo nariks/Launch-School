@@ -1,5 +1,5 @@
 const readline = require('readline-sync');
-//const
+
 /* eslint-disable id-length */
 const SHAPES = {
   r:    { name: 'rock',     beats: ['s', 'l'] },
@@ -12,16 +12,20 @@ const SHAPES = {
 
 const VALID_CHOICES = Object.keys(SHAPES);
 const PLAY_AGAIN_CHOICES = ['y', 'yes', 'n', 'no'];
+const cyan = '\x1b[36m';
+const red = '\x1b[31m';
+const yellow = '\x1b[33m';
+const blink = '\x1b[5m';
 
-function prompt(message) {
-  console.log('=> ' + message);
+function prompt(message, color = cyan) {
+  console.log(`${color}=> ${message}\x1b[0m`);
 }
 
 function getPlayerChoice() {
-  let playerChoice = readline.question();
+  let playerChoice = readline.question().toLowerCase();
   while (!VALID_CHOICES.includes(playerChoice)) {
     prompt(`Invalid choice. Choose one from ${VALID_CHOICES.join(', ')}`);
-    playerChoice = readline.question();
+    playerChoice = readline.question().toLowerCase();
   }
   return playerChoice;
 }
@@ -36,7 +40,7 @@ function displayChoices(game) {
   let computerChoice = SHAPES[game.computer.choice].name;
   prompt(`Player chooses ${playerChoice}, Computer chooses ${computerChoice}.`);
 }
- 
+
 function roundResult(game) {
   let round = {winner: '', loser: ''};
   if (game.player.choice === game.computer.choice) return "Tie Game";
@@ -68,44 +72,58 @@ function displayRoundResult(game, round) {
 }
 
 function displayRoundScore(game) {
-  prompt(`Player - ${game.player.score} Computer - ${game.computer.score}\n`);
+  prompt(`Player: ${game.player.score} Computer: ${game.computer.score}\n`,red);
 }
 
-let playAgain ;
-while (true) {
-let game = { player:    {choice: '', score: 0}, 
-             computer:  {choice: '', score: 0}
-}
-
-console.clear();
-prompt('Welcome to Rock Paper Scissor game !');
-prompt('************************************');
-while (game.player.score < 5 &&  game.computer.score < 5) {
-
-  prompt('Player choose your weapon !!!'); 
-  prompt("Enter r for rock, p for paper, s for scissors, l for lizard, sp for Spock");
-  game.player.choice = getPlayerChoice();
-  game.computer.choice = computerChoice();
-  displayChoices(game);
-  
-  result = roundResult(game);
-  if (result != 'Tie Game') roundScore(game, result);
-  displayRoundResult(game, result);
-  displayRoundScore(game);
-
-}
-
-if (game.player.score > game.computer.score) {
-  prompt(`Player - ${game.player.score} Computer - ${game.computer.score} Player Wins`);
-} else {
-  prompt(`Player - ${game.player.score} Computer - ${game.computer.score} Computer Wins`);
-}
-
-prompt('Do you want to play again? Enter y or n to continue');
-  playAgain = readline.question();
-  while (!PLAY_AGAIN_CHOICES.includes(playAgain)) {
-    prompt('Invalid input. Enter y or n to coninue');
-    playAgain = readline.question();
+function displayFinalScore(game) {
+  prompt(`FINAL SCORE`, yellow);
+  prompt(`Player: ${game.player.score}, Computer: ${game.computer.score}`,
+          yellow);
+  if (game.player.score > game.computer.score) {
+    prompt(`PLAYER wins the game !!!\n`, blink);
+  } else {
+    prompt(`COMPUTER wins the game !!!\n`, blink);
   }
-if (['n', 'no'].includes(playAgain.toLowerCase())) break;
+}
+
+function anotherGame(userInput) {
+  while (!PLAY_AGAIN_CHOICES.includes(userInput)) {
+      prompt('Invalid input. Enter y or n to coninue');
+      userInput = readline.question();
+    }
+  return userInput;
+}
+
+let playAgain;
+while (true) {
+
+  let game = { player:    {choice: '', score: 0},
+               computer:  {choice: '', score: 0} };
+
+  console.clear();
+  prompt('Welcome to Rock Paper Scissor game !');
+  prompt('************************************');
+
+  while (game.player.score < 5 &&  game.computer.score < 5) {
+
+    prompt('Player choose your weapon !!!');
+    prompt('Enter r for rock, p for paper, s for scissors,' +
+           'l for lizard, sp for Spock');
+
+    game.player.choice = getPlayerChoice();
+    game.computer.choice = computerChoice();
+    displayChoices(game);
+
+    let result = roundResult(game);
+    if (result !== 'Tie Game') roundScore(game, result);
+    displayRoundResult(game, result);
+    displayRoundScore(game);
+  }
+
+  displayFinalScore(game);
+
+  prompt('Do you want to play again? Enter y or n to continue');
+  playAgain = anotherGame(readline.question());
+
+  if (['n', 'no'].includes(playAgain.toLowerCase())) break;
 }
