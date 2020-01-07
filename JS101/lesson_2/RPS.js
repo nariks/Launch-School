@@ -1,9 +1,7 @@
 const readline = require('readline-sync');
 
-const VALID_CHOICES = ['r', 'p', 's', 'l', 'sp'];
-const PLAY_AGAIN_CHOICES = ['y', 'yes', 'n', 'no'];
 /* eslint-disable id-length */
-const GAME_DETAILS = {
+const SHAPES = {
   r:    { name: 'rock',     beats: ['s', 'l'] },
   p:    { name: 'paper',    beats: ['r', 'sp'] },
   s:    { name: 'scissors', beats: ['p', 'l'] },
@@ -11,6 +9,9 @@ const GAME_DETAILS = {
   sp:   { name: 'Spock',    beats: ['r', 's'] }
 };
 /* eslint-disable id-length */
+
+const VALID_CHOICES = Object.keys(SHAPES);
+const PLAY_AGAIN_CHOICES = ['y', 'yes', 'n', 'no'];
 
 function prompt(message) {
   console.log('=> ' + message);
@@ -30,82 +31,81 @@ function computerChoice() {
   return VALID_CHOICES[randomIndex];
 }
 
-function displayChoices(player, computer) {
-  let playerChoice = GAME_DETAILS[player.choice].name;
-  let computerChoice = GAME_DETAILS[computer.choice].name;
+function displayChoices(game) {
+  let playerChoice = SHAPES[game.player.choice].name;
+  let computerChoice = SHAPES[game.computer.choice].name;
   prompt(`Player chooses ${playerChoice}, Computer chooses ${computerChoice}.`);
 }
-
-function roundResult(player, computer) {
-  let round= {winner: '', winnerChoice: '', loser: '', loserChoice: ''};
-  if (player.choice === computer.choice) return "Tie Game";
-  if (GAME_DETAILS[player.choice]['beats'].includes(computer.choice)) {
+ 
+function roundResult(game) {
+  let round = {winner: '', loser: ''};
+  if (game.player.choice === game.computer.choice) return "Tie Game";
+  if (SHAPES[game.player.choice]['beats'].includes(game.computer.choice)) {
     [round.winner, round.loser] = ['player', 'computer'];
-    round.winnerChoice  = GAME_DETAILS[player.choice].name;
-    round.loserChoice = GAME_DETAILS[computer.choice].name;
-  } else {
+    } else {
     [round.winner, round.loser] = ['computer', 'player'];
-    round.winnerChoice = GAME_DETAILS[computer.choice].name;
-    round.loserChoice = GAME_DETAILS[player.choice].name;
   }
   return round;
 }
 
-function roundScore(result) {
-  if (result.winner = 'player') {
-    score.player += 1;
+function roundScore(game, round) {
+  if (round.winner === 'player') {
+    game.player.score += 1;
   } else {
-    score.computer += 1;
+    game.computer.score += 1;
   }
 }
 
-function displayWinner(round) {
+function displayRoundResult(game, round) {
   if (round === 'Tie Game') {
-    prompt(round);
+    prompt('No Winner this round!' + round);
   } else {
-    prompt(`${round.winnerChoice} beats ${round.loserChoice}.`);
-    prompt(`${round.winner.toUpperCase()} wins`);
+    let winnerChoice  = SHAPES[game[round.winner].choice].name;
+    let loserChoice = SHAPES[game[round.loser].choice].name;
+    prompt(`${winnerChoice} beats ${loserChoice}.`);
+    prompt(`${round.winner.toUpperCase()} wins this round`);
   }
+}
+
+function displayRoundScore(game) {
+  prompt(`Player - ${game.player.score} Computer - ${game.computer.score}\n`);
 }
 
 let playAgain ;
-let score = { player: 0, computer: 0 };
-console.log(score.player, score.computer);
+while (true) {
+let game = { player:    {choice: '', score: 0}, 
+             computer:  {choice: '', score: 0}
+}
 
-while (score.player < 5 &&  score.computer < 5) {
-  //let choice = {player: '', computer: ''};
-  let player = {choice: ''};
-  let computer = {choice: ''};
-  console.log(score.player, score.computer);
+console.clear();
+prompt('Welcome to Rock Paper Scissor game !');
+prompt('************************************');
+while (game.player.score < 5 &&  game.computer.score < 5) {
 
-  console.clear();
-  prompt(score.player, score.computer);
-  prompt('Welcome to Rock Paper Scissor game !');
-  prompt('************************************');
-  prompt('Player turn. Choose your weapon !!!'); 
-  prompt("Enter r for rock, p for paper, s for scissors,\
-          l for lizard, sp for Spock");
-  player.choice = getPlayerChoice();
-  console.log(player.choice);
-  computer.choice = computerChoice();
-  displayChoices(player, computer);
+  prompt('Player choose your weapon !!!'); 
+  prompt("Enter r for rock, p for paper, s for scissors, l for lizard, sp for Spock");
+  game.player.choice = getPlayerChoice();
+  game.computer.choice = computerChoice();
+  displayChoices(game);
   
-  result = roundResult(player, computer);
-  if (result != 'Tie Game') roundScore(result);
+  result = roundResult(game);
+  if (result != 'Tie Game') roundScore(game, result);
+  displayRoundResult(game, result);
+  displayRoundScore(game);
 
-  displayWinner(result);
+}
 
-  /*prompt('Do you want to play again? Enter y or n to continue');
+if (game.player.score > game.computer.score) {
+  prompt(`Player - ${game.player.score} Computer - ${game.computer.score} Player Wins`);
+} else {
+  prompt(`Player - ${game.player.score} Computer - ${game.computer.score} Computer Wins`);
+}
+
+prompt('Do you want to play again? Enter y or n to continue');
   playAgain = readline.question();
   while (!PLAY_AGAIN_CHOICES.includes(playAgain)) {
     prompt('Invalid input. Enter y or n to coninue');
     playAgain = readline.question();
-  }*/
-  //if (['n', 'no'].includes(playAgain.toLowerCase())) break;
-}
-
-if (score.player > score.computer) {
-  prompt(`Player - ${score.player} Computer - ${score.computer} Player Wins`);
-} else {
-  prompt(`Player - ${score.player} Computer - ${score.computer} Computer Wins`);
+  }
+if (['n', 'no'].includes(playAgain.toLowerCase())) break;
 }
