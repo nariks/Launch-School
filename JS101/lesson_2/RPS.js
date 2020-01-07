@@ -1,5 +1,5 @@
 const readline = require('readline-sync');
-
+//const
 /* eslint-disable id-length */
 const SHAPES = {
   r:    { name: 'rock',     beats: ['s', 'l'] },
