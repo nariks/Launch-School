@@ -1,20 +1,29 @@
+const readline = require("readline-sync");
+
+const HUMAN_MARKER = 'X';
+const COMPUTER_MARKER = 'O';
 const BOARD_ROWS = 3;
 const BOARD_COLS = 3;
 const SQUARE_ROWS = 3;      //Square rows must be odd;
-const SQUARE_COLS = 9;      //Square cols must be odd;
+const SQUARE_COLS = 5;      //Square cols must be odd;
 const MAX_SQUARES = BOARD_ROWS * BOARD_COLS;
 const SPACE_FILLER = Array(SQUARE_COLS).fill(' ').join('');
 const SEPARATOR = Array(SQUARE_COLS).fill('-').join('');
+
+function prompt(msg) {
+  console.log(`==> ${msg}`);
+}
 
 function displayPositions(board, row) {
   let padWidth = (SQUARE_COLS - 1) / 2;
   let padding = Array(padWidth).fill(' ').join('');
   let sliceStart = row * BOARD_COLS;
   let sliceEnd = sliceStart + BOARD_COLS;
-  let positions = board.slice(sliceStart, sliceEnd);
-  positions = positions.map( position => padding + position + padding);
-  let positionRow = positions.join('|');
-  console.log(positionRow);
+  let positionsRow = board.slice(sliceStart, sliceEnd)
+                          .map( position => padding + position + padding)
+                          .join('|');
+  
+  console.log(positionsRow);
 }
 
 function displaySquares(board, row) {
@@ -45,9 +54,22 @@ function initializeBoard() {
   return emptyBoard;
 }
 
+function playerChoosesSquare(board) {
+  let emptySquares = [...board.keys()].filter( key => board[key] = ' ');
+  prompt(`Choose a square ${emptySquares.join(', ')})`);
+  let square = Number(readline.question().trim()) - 1;
+  if (emptySquares.includes(square)) {
+    board[square] = 'X';
+  }
+  else { 
+    prompt('Invalid input. Choose an empty square');
+  }
+  return board;
+}
 
 let board = initializeBoard();
-board[1] = 'X';
+displayBoard(board);
+board = playerChoosesSquare(board);
 displayBoard(board);
 
 
