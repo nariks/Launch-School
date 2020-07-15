@@ -1,6 +1,6 @@
 const readline = require("readline-sync");
 
-const HUMAN_MARKER = 'X';
+const PLAYER_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const BOARD_ROWS = 3;
 const BOARD_COLS = 3;
@@ -54,22 +54,44 @@ function initializeBoard() {
   return emptyBoard;
 }
 
+function unfilledSquares(board) {
+  return [...board.keys()].filter( index => board[index] === ' ');
+}
+
 function playerChoosesSquare(board) {
-  let emptySquares = [...board.keys()].filter( key => board[key] = ' ');
-  prompt(`Choose a square ${emptySquares.join(', ')})`);
+  let emptySquares = unfilledSquares(board); 
+  let emptySquaresMsg = emptySquares.map( index => index + 1).join(', ');
+  prompt(`Choose a square: ${emptySquaresMsg})`);
   let square = Number(readline.question().trim()) - 1;
-  if (emptySquares.includes(square)) {
-    board[square] = 'X';
+  while (!emptySquares.includes(square)) {
+    prompt(`Invalid input. Choose an empty square: ${emptySquaresMsg}`);
+    square = Number(readline.question().trim()) - 1;
   }
-  else { 
-    prompt('Invalid input. Choose an empty square');
-  }
+  board[square] = PLAYER_MARKER;
+
   return board;
+}
+
+function computerChoosesSquare(board) {
+  let emptySquares = unfilledSquares(board);
+  if (!emptySquares.length) return board;
+  
+  let index = Math.floor(Math.random() * emptySquares.length);
+  board[emptySquares[index]] = COMPUTER_MARKER;
+  return board;
+}
+
+function someoneWon(board) {
+  return false;
 }
 
 let board = initializeBoard();
 displayBoard(board);
-board = playerChoosesSquare(board);
-displayBoard(board);
+while (unfilledSquares(board).length !== 0) {
+  board = playerChoosesSquare(board);
+  board = computerChoosesSquare(board);
+  displayBoard(board);
 
+  if (someoneWon(board)) break;
+}
 
