@@ -82,6 +82,10 @@ function computerChoosesSquare(board) {
 }
 
 function someoneWon(board) {
+  let rows = board.map( (square, index)  => {
+    if (index % BOARD_COLS === 0) return board.slice(index, BOARD_COLS)
+  } );
+  console.log(rows);
   return false;
 }
 
