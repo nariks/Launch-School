@@ -82,10 +82,15 @@ function computerChoosesSquare(board) {
 }
 
 function someoneWon(board) {
-  let rows = board.map( (square, index)  => {
-    if (index % BOARD_COLS === 0) return board.slice(index, BOARD_COLS)
-  } );
+  let rows = board.filter( (_, index)  => index % BOARD_COLS === 0)
+                  .map( index => board.slice(index, index + BOARD_COLS)); 
+
+  let cols = [];
+  for (let ctr = 0; ctr < BOARD_COLS; ctr += 1) {
+    cols.push(board.filter( (num, index) => (index - ctr) % BOARD_COLS === 0));
+  }
   console.log(rows);
+  console.log(cols);
   return false;
 }
 
