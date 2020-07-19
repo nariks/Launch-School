@@ -81,37 +81,63 @@ function computerChoosesSquare(board) {
   return board;
 }
 
-function winningCombinations(squares) {
-  if (squares.every(sq => sq === PLAYER_MARKER)) return true;
-  if (squares.every(sq => sq === COMPUTER_MARKER)) return true;
-  return false;
+function detectWinner(lines) {
+  let winner;
+  lines.forEach( line => {
+    if (line.every(sq => sq === PLAYER_MARKER)) {
+      winner = 'Player';
+    };
+    if (line.every(sq => sq === COMPUTER_MARKER)) {
+      winner = 'Computer';
+    }
+  });
+  return winner;
 }
  
 
 function someoneWon(board) {
-  rowIndex = [...board.keys()].filter(index => index % 3 === 0);
-  rowIndex.forEach(index => {
-      let row = board.slice(index, index + BOARD_COLS)
-      return winningCombinations(row);
-   });
-
-
-  for (let ctr = 0; ctr < BOARD_COLS; ctr += 1) {
-    let col = board.filter( (_, index) => (index - ctr) % BOARD_COLS === 0);
-    return winningCombinations(col);
+  let winningLines = [];
+  //extracting rows
+  for (let index = 0; index < MAX_SQUARES; index += BOARD_COLS) {
+    winningLines.push(board.slice(index, index + BOARD_COLS));
   }
-  return false;
+
+  //extracting columns and first diagonal
+  let diag1 = [];
+  let diag2 = [];
+  for (let ctr = 0; ctr < BOARD_COLS; ctr += 1) {
+    winningLines.push(board.filter( (_, index) => {
+      return (index - ctr) % BOARD_COLS === 0 }));
+    diag1.push(board[(BOARD_COLS + 1) * ctr]);
+  }
+  
+  // extracting second diagonal
+  for (let ctr = 1; ctr <= BOARD_COLS; ctr += 1) {
+    diag2.push(board[(BOARD_COLS - 1) * ctr]);
+  }
+
+  winningLines.push(diag1, diag2);
+
+  return detectWinner(winningLines);
 }
 
 let board = initializeBoard();
 displayBoard(board);
 while (unfilledSquares(board).length !== 0) {
   board = playerChoosesSquare(board);
-  if (someoneWon(board)) break;
+  if (winner = someoneWon(board)) {
+    displayBoard(board);
+    console.log(`${winner} won!`);
+    break;
+  }
 
   board = computerChoosesSquare(board);
   displayBoard(board);
 
-  if (someoneWon(board)) break;
+  if (winner = someoneWon(board)) {
+    console.log(`${winner} won!`);
+    break;
+  }
 }
+
 
