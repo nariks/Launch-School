@@ -81,16 +81,25 @@ function computerChoosesSquare(board) {
   return board;
 }
 
-function someoneWon(board) {
-  let rows = board.filter( (_, index)  => index % BOARD_COLS === 0)
-                  .map( index => board.slice(index, index + BOARD_COLS)); 
+function winningCombinations(squares) {
+  if (squares.every(sq => sq === PLAYER_MARKER)) return true;
+  if (squares.every(sq => sq === COMPUTER_MARKER)) return true;
+  return false;
+}
+ 
 
-  let cols = [];
+function someoneWon(board) {
+  rowIndex = [...board.keys()].filter(index => index % 3 === 0);
+  rowIndex.forEach(index => {
+      let row = board.slice(index, index + BOARD_COLS)
+      return winningCombinations(row);
+   });
+
+
   for (let ctr = 0; ctr < BOARD_COLS; ctr += 1) {
-    cols.push(board.filter( (num, index) => (index - ctr) % BOARD_COLS === 0));
+    let col = board.filter( (_, index) => (index - ctr) % BOARD_COLS === 0);
+    return winningCombinations(col);
   }
-  console.log(rows);
-  console.log(cols);
   return false;
 }
 
@@ -98,6 +107,8 @@ let board = initializeBoard();
 displayBoard(board);
 while (unfilledSquares(board).length !== 0) {
   board = playerChoosesSquare(board);
+  if (someoneWon(board)) break;
+
   board = computerChoosesSquare(board);
   displayBoard(board);
 
