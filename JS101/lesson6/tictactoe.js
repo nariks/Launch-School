@@ -22,7 +22,7 @@ function displayPositions(board, row) {
   let positionsRow = board.slice(sliceStart, sliceEnd)
                           .map( position => padding + position + padding)
                           .join('|');
-  
+
   console.log(positionsRow);
 }
 
@@ -58,8 +58,17 @@ function unfilledSquares(board) {
   return [...board.keys()].filter( index => board[index] === ' ');
 }
 
+function chooseSquare(board, turn) {
+  if (turn === "Player") {
+    board = playerChoosesSquare(board);
+  } else if (turn === "Computer") {
+    board = computerChoosesSquare(board);
+  }
+  return board;
+}
+
 function playerChoosesSquare(board) {
-  let emptySquares = unfilledSquares(board); 
+  let emptySquares = unfilledSquares(board);
   let emptySquaresMsg = emptySquares.map( index => index + 1).join(', ');
   prompt(`Choose a square: ${emptySquaresMsg})`);
   let square = Number(readline.question().trim()) - 1;
@@ -75,7 +84,7 @@ function playerChoosesSquare(board) {
 function computerChoosesSquare(board) {
   let emptySquares = unfilledSquares(board);
   if (!emptySquares.length) return board;
-  
+
   let index = Math.floor(Math.random() * emptySquares.length);
   board[emptySquares[index]] = COMPUTER_MARKER;
   return board;
@@ -86,58 +95,75 @@ function detectWinner(lines) {
   lines.forEach( line => {
     if (line.every(sq => sq === PLAYER_MARKER)) {
       winner = 'Player';
-    };
+    }
     if (line.every(sq => sq === COMPUTER_MARKER)) {
       winner = 'Computer';
     }
   });
   return winner;
 }
- 
 
-function someoneWon(board) {
-  let winningLines = [];
-  //extracting rows
+function extractRows(board) {
+  let rowLines = [];
   for (let index = 0; index < MAX_SQUARES; index += BOARD_COLS) {
-    winningLines.push(board.slice(index, index + BOARD_COLS));
+    rowLines.push(board.slice(index, index + BOARD_COLS));
   }
+  return rowLines;
+}
 
-  //extracting columns and first diagonal
+function extractColumns(board) {
+  let colLines = [];
+  for (let ctr = 0; ctr < BOARD_COLS; ctr += 1) {
+    colLines.push(board.filter( (_, index) => {
+       return (index - ctr) % BOARD_COLS === 0;
+}));
+  }
+  return colLines;
+}
+
+function extractDiags(board) {
   let diag1 = [];
   let diag2 = [];
   for (let ctr = 0; ctr < BOARD_COLS; ctr += 1) {
-    winningLines.push(board.filter( (_, index) => {
-      return (index - ctr) % BOARD_COLS === 0 }));
-    diag1.push(board[(BOARD_COLS + 1) * ctr]);
+      diag1.push(board[(BOARD_COLS + 1) * ctr]);
   }
-  
-  // extracting second diagonal
+
   for (let ctr = 1; ctr <= BOARD_COLS; ctr += 1) {
     diag2.push(board[(BOARD_COLS - 1) * ctr]);
   }
+  return [diag1, diag2];
+}
 
-  winningLines.push(diag1, diag2);
-
-  return detectWinner(winningLines);
+function someoneWon(board) {
+  let rowLines = extractRows(board);
+  let colLines = extractColumns(board);
+  let diagLines = extractDiags(board);
+  let boardLines = [...rowLines, ...colLines, ...diagLines];
+  return detectWinner(boardLines);
 }
 
 let board = initializeBoard();
+let turn = "Player";
+
 displayBoard(board);
+let winner;
+let score = {Computer: 0, Player: 0};
+
 while (unfilledSquares(board).length !== 0) {
-  board = playerChoosesSquare(board);
-  if (winner = someoneWon(board)) {
-    displayBoard(board);
-    console.log(`${winner} won!`);
-    break;
-  }
+  board = chooseSquare(board, turn);
+  winner = someoneWon(board);
+  if (winner) break;
 
-  board = computerChoosesSquare(board);
+  turn = (turn === "Player") ? "Computer" : "Player";
   displayBoard(board);
+}
 
-  if (winner = someoneWon(board)) {
-    console.log(`${winner} won!`);
-    break;
-  }
+displayBoard(board);
+if (winner) {
+  prompt(`${winner} won!`);
+  score[winner] += 1;
+} else {
+  prompt('Tie Game');
 }
 
 
