@@ -92,36 +92,39 @@ function createNodes(tree, layer, turn) {
   let nodeId = tree.depth[layer].slice(-1)[0] + 1;
   tree.depth[layer + 1] = [];
 
-  if (unfilledSquares(tree[tree.depth[layer][0]]).length === 0) {
-    return tree;
-  }
+  if (unfilledSquares(tree[tree.depth[layer][0]].board).length === 0) return tree;
+    
   tree.depth[layer].forEach( node => {
-    let board = tree[node].board.slice();
-    let tree[node].children = [];
-    let tree[node].score = undefined;
-    let emptySquares = unfilledSquares(board);
+    let parentBoard = tree[node].board.slice();
+    let emptySquares = unfilledSquares(parentBoard);
     
     emptySquares.forEach( sq => {
-      tree[node].children = nodeId;
-      tree[nodeId].board = board.slice();
+      tree[node].children.push(nodeId);
+      tree[nodeId] = {};
+      tree[nodeId].board = parentBoard.slice();
       tree[nodeId].board[sq] = marker(turn);
+      if (detectWinner(tree[nodeId].board))
       tree[nodeId].score = undefined;
+      tree[nodeId].children = [];
       tree.depth[layer + 1].push(nodeId);
       nodeId += 1;
+    
     });
   });
   turn = nextTurn(turn);
-  createNodes(tree, layer + 1, turn);
+  return createNodes(tree, layer + 1, turn);
 }
 
 function constructTree(board, turn) {
   let tree = {depth: {}};
   let nodeId = 0;
   let layer = 0;
-  let tree[nodeId] = {}
+  tree[nodeId] = {}
   tree.depth[layer] = [nodeId];
+  tree[nodeId].children = [];
+  tree[nodeId].score = undefined;
   tree[nodeId].board = board.slice();
-  tree = createNodes(tree, layer, turn);
+  return createNodes(tree, layer, turn);
 }
 
 /*function minimax(tree, turn) {
@@ -133,8 +136,9 @@ function constructTree(board, turn) {
     min(tree[0].children */
 
 function computerChoosesSquare(board) {
-  let choicetree = constructTree(board, 'Computer');
+  let choiceTree = constructTree(board, 'Computer');
 //  let choice = calculateNodevalue
+  console.log(choiceTree);
   let wait = readline.question("WAIT !!!");
   let emptySquares = unfilledSquares(board);
   if (!emptySquares.length) return board;
